@@ -1,0 +1,101 @@
+1. Создать двух пользователей (с помощью метода User.objects.create_user('username')).
+
+>>> u1 = User.objects.create_user(username='Natalie')
+>>> u2 = User.objects.create_user(username='Dan')
+
+2. Создать два объекта модели Author, связанные с пользователями.
+
+>>> Author.objects.create(id_author=u1)
+>>> Author.objects.create(id_author=u2)
+
+3. Добавить 4 категории в модель Category.
+
+>>> Category.objects.create(name_category='IT')
+>>> Category.objects.create(name_category='Sport')
+>>> Category.objects.create(name_category='Music')
+>>> Category.objects.create(name_category='Cinema')
+
+4. Добавить 2 статьи и 1 новость.
+
+>>> author = Author.objects.get(id=1)
+>>> Post.objects.create(author=author, post_choice='AR', head='Тесная связь музыки и спорта', text='Кк же взаимодействует музыка со спортом? А очень просто, м
+ы можем наблюдать за этим взаимодействием в танцах и художественной гимнастике, зарядке и т.д. Это наиболее яркие проявления этого взаимодействия.Интерес к за
+нятию спортом повышается при взаимодействии с музыкой. Многие спортсмены проводят свои тренировки под определенные музыкальные композиции. Это помогает им нас
+троиться на интенсивные тренировки и меньше отвлекаться на окружающий мир. Музыка помогает настроить разум на конкретную цель.Занятия спортом, при музыкальном
+ сопровождении, становятся разнообразнее, интереснее.')
+>>> Post.objects.create(author=author, post_choice='NW', head='Известная певица вышла замуж за популярного каскадера', text='Джулия Бакслер, исполнительница п
+опулярных зимних хитов, недавно обвенчалась с известным каскадером Дэвидом Оранжем. Пара познакомилась на съемках фильма, где Джулия исполняла песни, а Дэвид 
+играл второстепенную роль. Спустя год пара заявила о помолвке. Через полгода они сыграли пышную свадьбу на берегу Австралии (смотреть фото)')
+
+>>> author1 = Author.objects.get(id=2)
+>>> Post.objects.create(author=author1, post_choice='AR', head='Что слушают разработчики?', text='Написание кода — это сложная и творческая задача, требующая 
+высокого уровня концентрации. И согласно ряду исследований, помочь настроиться на продуктивный день может музыка.Вопрос только в том, какой музыкальный жанр в
+ыбрать. На таких площадках, как Reddit, Hacker News и Хабр обсуждению этого вопроса посвящен не один тред. Мы решили проанализировать мнения разработчиков и о
+тобрать наиболее интересные. Подробности по ссылке в описании...')
+
+5. Присвоить им категории (как минимум в одной статье/новости должно быть не меньше 2 категорий).
+
+>>> Post.objects.get(id=1).choice_category.add(Category.objects.get(id=2))
+>>> Post.objects.get(id=1).choice_category.add(Category.objects.get(id=3))
+
+>>> Post.objects.get(id=2).choice_category.add(Category.objects.get(id=2)) 
+>>> Post.objects.get(id=2).choice_category.add(Category.objects.get(id=3))
+>>> Post.objects.get(id=2).choice_category.add(Category.objects.get(id=4))
+
+>>> Post.objects.get(id=3).choice_category.add(Category.objects.get(id=1)) 
+>>> Post.objects.get(id=3).choice_category.add(Category.objects.get(id=3))
+
+6. Создать как минимум 4 комментария к разным объектам модели Post (в каждом объекте должен быть как минимум один комментарий).
+
+>>> Comment.objects.create(post=Post.objects.get(id=1), user_com=Author.objects.get(id=2).id_author, text='Спасибо, интересная информация, возьму на вооружени
+е!')
+>>> Comment.objects.create(post=Post.objects.get(id=2), user_com=Author.objects.get(id=1).id_author, text='О, моя любимая певица! Очень рада за нее! Счастья и
+м!')
+>>> Comment.objects.create(post=Post.objects.get(id=2), user_com=Author.objects.get(id=2).id_author, text='Пф, лишь бы достатком похвастаться!!!')
+>>> Comment.objects.create(post=Post.objects.get(id=3), user_com=Author.objects.get(id=1).id_author, text='Ссылка не открывается! :(')
+
+7. Применяя функции like() и dislike() к статьям/новостям и комментариям, скорректировать рейтинги этих объектов.
+
+>>> Post.objects.get(id=1).like()   
+>>> Post.objects.get(id=2).like() 
+>>> Post.objects.get(id=2).like()
+>>> Post.objects.get(id=3).dislike()
+
+>>> Comment.objects.get(id=1).like()
+>>> Comment.objects.get(id=1).like()
+>>> Comment.objects.get(id=2).like() 
+>>> Comment.objects.get(id=3).dislike()
+>>> Comment.objects.get(id=3).dislike()
+>>> Comment.objects.get(id=3).dislike()
+>>> Comment.objects.get(id=4).like() 
+
+8. Обновить рейтинги пользователей.
+
+>>> a1 = Author.objects.get(id=1)
+>>> a1.update_rating()
+
+>>> a2 = Author.objects.get(id=2) 
+>>> a2.update_rating() 
+
+9. Вывести username и рейтинг лучшего пользователя (применяя сортировку и возвращая поля первого объекта).
+
+>>> a = Author.objects.order_by('-rating_author')[:1]
+>>> for i in a:
+...     i.rating_author 
+...     i.id_author.username
+
+10. Вывести дату добавления, username автора, рейтинг, заголовок и превью лучшей статьи, основываясь на лайках/дизлайках к этой статье.
+
+>>> p = Post.objects.order_by('-rating')[:1]
+>>> for i in p:
+...     i.date_time
+...     i.author.id_author
+...     i.rating
+...     i.head
+...     i.preview()
+
+11. Вывести все комментарии (дата, пользователь, рейтинг, текст) к этой статье.
+
+>>> p = Post.objects.order_by('-rating')[:1]
+>>> Comment.objects.filter(post=p).values('date_time', 'user_com', 'rating', 'text')
+
